@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ходим баҳоси — KPI натижалари</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#14213D;
+    --ink-soft:#3B4864;
+    --paper:#F1F0EA;
+    --panel:#FFFFFF;
+    --line: rgba(20,33,61,0.12);
+    --brass:#A9761E;
+    --brass-soft: rgba(169,118,30,0.14);
+    --good:#3F6B54;
+    --good-soft: rgba(63,107,84,0.14);
+    --low:#8C3A2B;
+    --track: rgba(20,33,61,0.08);
+    --muted:#6B6E76;
+  }
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --ink:#EDEDE6;
+      --ink-soft:#B8BDCB;
+      --paper:#12151C;
+      --panel:#1A1E27;
+      --line: rgba(237,237,230,0.12);
+      --brass:#D9A94A;
+      --brass-soft: rgba(217,169,74,0.16);
+      --good:#7FBFA0;
+      --good-soft: rgba(127,191,160,0.14);
+      --low:#E08C79;
+      --track: rgba(237,237,230,0.10);
+      --muted:#9497A0;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#EDEDE6;
+    --ink-soft:#B8BDCB;
+    --paper:#12151C;
+    --panel:#1A1E27;
+    --line: rgba(237,237,230,0.12);
+    --brass:#D9A94A;
+    --brass-soft: rgba(217,169,74,0.16);
+    --good:#7FBFA0;
+    --good-soft: rgba(127,191,160,0.14);
+    --low:#E08C79;
+    --track: rgba(237,237,230,0.10);
+    --muted:#9497A0;
+  }
+
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:'IBM Plex Sans', -apple-system, sans-serif;
+    line-height:1.5;
+  }
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:48px 20px 96px;
+  }
+  h1,h2,h3{
+    font-family:'Newsreader', Georgia, serif;
+    font-weight:500;
+    margin:0;
+  }
+
+  /* ---- Header ---- */
+  .masthead{
+    display:flex;
+    justify-content:space-between;
+    align-items:flex-start;
+    gap:24px;
+    padding-bottom:28px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:36px;
+  }
+  .masthead .name{
+    font-size:28px;
+    letter-spacing:0.2px;
+  }
+  .masthead .role{
+    color:var(--ink-soft);
+    font-size:15px;
+    margin-top:6px;
+  }
+  .masthead .period{
+    text-align:right;
+    color:var(--muted);
+    font-size:13px;
+    white-space:nowrap;
+    padding-top:6px;
+  }
+
+  .intro{
+    color:var(--ink-soft);
+    font-size:15px;
+    max-width:60ch;
+    margin-bottom:40px;
+  }
+
+  /* ---- KPI cards ---- */
+  .kpi-list{
+    display:flex;
+    flex-direction:column;
+    gap:20px;
+    margin-bottom:56px;
+  }
+  .kpi-card{
+    background:var(--panel);
+    border:1px solid var(--line);
+    border-radius:4px;
+    padding:26px 26px 22px;
+  }
+  .kpi-code{
+    display:inline-block;
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:12px;
+    color:var(--brass);
+    background:var(--brass-soft);
+    padding:3px 8px;
+    border-radius:3px;
+    margin-bottom:10px;
+    letter-spacing:0.3px;
+  }
+  .kpi-card h3{
+    font-size:19px;
+    line-height:1.35;
+    margin-bottom:4px;
+  }
+  .kpi-goal{
+    color:var(--muted);
+    font-size:13px;
+    margin:0 0 18px;
+  }
+
+  .kpi-score-row{
+    display:flex;
+    align-items:center;
+    gap:20px;
+    padding:16px 0;
+    border-top:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+    margin-bottom:16px;
+  }
+  .ring{
+    --size:64px;
+    width:var(--size);
+    height:var(--size);
+    border-radius:50%;
+    flex:none;
+    background: conic-gradient(var(--brass) calc(var(--val)/10*360deg), var(--track) 0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .ring::after{
+    content:"";
+    position:absolute;
+    inset:6px;
+    border-radius:50%;
+    background:var(--panel);
+  }
+  .ring span{
+    position:relative;
+    z-index:1;
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size:18px;
+  }
+  .kpi-meta{
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+  .kpi-meta strong{
+    color:var(--ink);
+    font-weight:600;
+  }
+
+  .raters{
+    list-style:none;
+    margin:0;
+    padding:0;
+    display:flex;
+    flex-direction:column;
+    gap:2px;
+  }
+  .rater{
+    display:grid;
+    grid-template-columns: 1fr auto;
+    align-items:baseline;
+    gap:10px 14px;
+    padding:9px 0;
+  }
+  .rater + .rater{
+    border-top:1px solid var(--line);
+  }
+  .rater-name{
+    font-size:14px;
+    color:var(--ink-soft);
+  }
+  .rater-score{
+    font-family:'Newsreader', serif;
+    font-weight:600;
+    font-size:16px;
+    color:var(--ink);
+  }
+  .comment{
+    grid-column:1 / -1;
+    margin:2px 0 4px;
+    font-size:13.5px;
+    color:var(--muted);
+    font-style:italic;
+    padding-left:2px;
+    border-left:2px solid var(--line);
+    padding-left:10px;
+  }
+
+  @media (max-width:520px){
+    .masthead{flex-direction:column;}
+    .masthead .period{text-align:left;padding-top:0;}
+    .kpi-card{padding:20px 18px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div>
+      <div class="name">Аскаров Баходир Рустамович</div>
+      <div class="role">Шўъба мудири · Ходимлар билан ишлаш департаменти</div>
+    </div>
+    <div class="period">2026-йил, II чорак<br>баҳолаш даври</div>
+  </div>
+
+  <p class="intro">Ушбу саҳифада сиз белгиланган KPI кўрсаткичлари бўйича олган баҳоларингизни кўришингиз мумкин. Ҳар бир кўрсаткич бўйича баҳоловчилар сони ва ўртача балл келтирилган. Агар кўрсаткич бўйича биттадан ортиқ баҳоловчи бўлса, уларнинг исмлари кўрсатилмайди. Изоҳ фақат 7 балдан паст баҳо қўйилган ҳолларда кўринади.</p>
+
+  <div class="kpi-list">
+
+    <!-- KPI 1 -->
+    <article class="kpi-card">
+      <span class="kpi-code">300701</span>
+      <h3>Вакансияларни белгиланган муддатда ёпиш меъёри бажарилиши даражаси</h3>
+      <p class="kpi-goal">Стратегик мақсад: Барқарорликни таъминлаш</p>
+
+      <div class="kpi-score-row">
+        <div class="ring" style="--val:8"><span>8.0</span></div>
+        <div class="kpi-meta"><strong>1 баҳоловчи</strong> томонидан баҳоланган</div>
+      </div>
+
+      <ul class="raters">
+        <li class="rater">
+          <span class="rater-name">Норова Ойгул — HR бўлими бошлиғи</span>
+          <span class="rater-score">8</span>
+        </li>
+      </ul>
+    </article>
+
+    <!-- KPI 2 -->
+    <article class="kpi-card">
+      <span class="kpi-code">700275</span>
+      <h3>Бош банк томонидан берилган топшириқлар ижроси</h3>
+      <p class="kpi-goal">Стратегик мақсад: Ижро интизомига риоя қилиш</p>
+
+      <div class="kpi-score-row">
+        <div class="ring" style="--val:8"><span>8.0</span></div>
+        <div class="kpi-meta"><strong>4 баҳоловчи</strong> томонидан баҳоланган · ўртача балл</div>
+      </div>
+
+      <ul class="raters">
+        <li class="rater">
+          <span class="rater-name">1-баҳоловчи</span>
+          <span class="rater-score">9</span>
+        </li>
+        <li class="rater">
+          <span class="rater-name">2-баҳоловчи</span>
+          <span class="rater-score">8</span>
+        </li>
+        <li class="rater">
+          <span class="rater-name">3-баҳоловчи</span>
+          <span class="rater-score">9</span>
+        </li>
+        <li class="rater">
+          <span class="rater-name">4-баҳоловчи</span>
+          <span class="rater-score">6</span>
+          <p class="comment">Баъзи топшириқлар кечиктирилди, қўшимча назорат зарур.</p>
+        </li>
+      </ul>
+    </article>
+
+    <!-- KPI 3 -->
+    <article class="kpi-card">
+      <span class="kpi-code">700275Q</span>
+      <h3>Ходим лавозим мажбуриятида белгиланган вазифаларни бажариш даражаси</h3>
+      <p class="kpi-goal">Стратегик мақсад: Жорий вазифалар ижроси</p>
+
+      <div class="kpi-score-row">
+        <div class="ring" style="--val:7.33"><span>7.3</span></div>
+        <div class="kpi-meta"><strong>3 баҳоловчи</strong> томонидан баҳоланган · ўртача балл</div>
+      </div>
+
+      <ul class="raters">
+        <li class="rater">
+          <span class="rater-name">1-баҳоловчи</span>
+          <span class="rater-score">6</span>
+          <p class="comment">Баъзи вазифалар бўйича қўшимча назорат талаб этилади.</p>
+        </li>
+        <li class="rater">
+          <span class="rater-name">2-баҳоловчи</span>
+          <span class="rater-score">8</span>
+        </li>
+        <li class="rater">
+          <span class="rater-name">3-баҳоловчи</span>
+          <span class="rater-score">8</span>
+        </li>
+      </ul>
+    </article>
+
+  </div>
+
+</div>
+</body>
+</html>
